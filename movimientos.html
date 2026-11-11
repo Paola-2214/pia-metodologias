@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Productos - Veterinaria Patitas</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/estilos.css') }}">
+
+</head>
+
+<body>
+
+
+<!-- ==============================
+     MENÚ
+============================== -->
+
+<header>
+
+    <nav class="navbar">
+
+        <div class="logo">
+            🐾 Patitas
+        </div>
+
+        <div class="botones-menu">
+
+            <a href="{{ url_for('inicio') }}"
+               class="btn-login">
+                Inicio
+            </a>
+
+            <a href="{{ url_for('mascotas') }}"
+               class="btn-login">
+                Mis Mascotas
+            </a>
+
+            <a href="{{ url_for('citas') }}"
+               class="btn-login">
+                Mis Citas
+            </a>
+
+            <a href="{{ url_for('logout') }}"
+               class="btn-cita">
+                Cerrar sesión
+            </a>
+
+        </div>
+
+    </nav>
+
+</header>
+
+
+<!-- ==============================
+     ENCABEZADO
+============================== -->
+
+<section class="pagina-titulo">
+
+    <p>
+        TIENDA PATITAS
+    </p>
+
+    <h1>
+        🛍️ Productos
+    </h1>
+
+    <span>
+        Todo lo que tu mascota necesita
+    </span>
+
+</section>
+
+
+<!-- ==============================
+     COMPRA
+============================== -->
+
+<section class="seccion">
+
+
+    <div class="contenedor-compras">
+
+
+        <!-- FORMULARIO -->
+
+        <div class="formulario">
+
+            <h2>
+                Realizar compra
+            </h2>
+
+
+            {% if error %}
+
+                <div class="mensaje-error">
+                    {{ error }}
+                </div>
+
+            {% endif %}
+
+
+            {% if exito %}
+
+                <div class="mensaje-exito">
+                    Compra realizada correctamente.
+                </div>
+
+            {% endif %}
+
+
+            <form method="POST">
+<input type="hidden" name="_csrf" value="{{ csrf_token() }}">
+
+
+                <!-- PRODUCTO -->
+
+                <label>
+                    Producto
+                </label>
+
+                <select name="producto" required>
+
+                    <option value="">
+                        Selecciona un producto
+                    </option>
+
+                    {% for producto in productos %}
+
+                        <option value="{{ producto['id_producto'] }}">
+
+                            {{ producto["nombre"] }}
+                            - ${{ producto["precio"] }}
+
+                        </option>
+
+                    {% endfor %}
+
+                </select>
+
+
+                <!-- SUCURSAL -->
+
+                <label>
+                    Sucursal
+                </label>
+
+                <select name="sucursal" required>
+
+                    <option value="">
+                        Selecciona una sucursal
+                    </option>
+
+                    {% for sucursal in sucursales %}
+
+                        <option value="{{ sucursal['id_sucursal'] }}">
+                            {{ sucursal["nombre"] }}
+                        </option>
+
+                    {% endfor %}
+
+                </select>
+
+
+                <!-- CANTIDAD -->
+
+                <label>
+                    Cantidad
+                </label>
+
+                <input
+                    type="number"
+                    name="cantidad"
+                    value="1"
+                    min="1"
+                    required
+                >
+
+
+                <button
+                    type="submit"
+                    class="boton-formulario">
+
+                    🛒 Comprar
+
+                </button>
+
+            </form>
+
+        </div>
+
+
+        <!-- INVENTARIO -->
+
+        <div>
+
+            <h2 class="titulo-lista">
+                Productos disponibles
+            </h2>
+
+
+            {% for item in inventario %}
+
+                <div class="producto-stock">
+
+                    <div class="producto-stock-icono">
+
+                        {% if "Alimento" in item["producto"] %}
+
+                            🥣
+
+                        {% elif "Pelota" in item["producto"] %}
+
+                            🎾
+
+                        {% elif "Shampoo" in item["producto"] %}
+
+                            🧴
+
+                        {% else %}
+
+                            🛍️
+
+                        {% endif %}
+
+                    </div>
+
+
+                    <div>
+
+                        <h3>
+                            {{ item["producto"] }}
+                        </h3>
+
+                        <p>
+                            📍 {{ item["sucursal"] }}
+                        </p>
+
+                        <p>
+
+                            <strong>
+                                Existencias:
+                            </strong>
+
+                            {{ item["existencias"] }}
+
+                        </p>
+
+                    </div>
+
+                </div>
+
+            {% endfor %}
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- ==============================
+     HISTORIAL
+============================== -->
+
+<section class="seccion fondo">
+
+
+    <div class="titulo-seccion">
+
+        <p>
+            MIS COMPRAS
+        </p>
+
+        <h2>
+            Historial de compras
+        </h2>
+
+    </div>
+
+
+    <div class="historial-compras">
+
+
+        {% if compras %}
+
+
+            {% for compra in compras %}
+
+                <div class="tarjeta-compra">
+
+
+                    <div>
+
+                        <h3>
+                            {{ compra["producto"] }}
+                        </h3>
+
+
+                        <p>
+                            📅 {{ compra["fecha"] }}
+                        </p>
+
+
+                        <p>
+
+                            <strong>
+                                Cantidad:
+                            </strong>
+
+                            {{ compra["cantidad"] }}
+
+                        </p>
+
+
+                        <p>
+
+                            <strong>
+                                Precio unitario:
+                            </strong>
+
+                            ${{ compra["precio"] }}
+
+                        </p>
+
+                    </div>
+
+
+                    <div class="total-compra">
+
+                        ${{ compra["total"] }}
+
+                    </div>
+
+                </div>
+
+            {% endfor %}
+
+
+        {% else %}
+
+            <div class="sin-mascotas">
+
+                <div>
+                    🛍️
+                </div>
+
+                <h3>
+                    Todavía no has realizado compras
+                </h3>
+
+                <p>
+                    Tus compras aparecerán aquí.
+                </p>
+
+            </div>
+
+        {% endif %}
+
+    </div>
+
+</section>
+
+
+<footer>
+
+    <div>
+
+        <h3>
+            🐾 Clínica Veterinaria Patitas
+        </h3>
+
+        <p>
+            Cuidamos a quienes forman parte de tu familia.
+        </p>
+
+    </div>
+
+
+    <div>
+
+        <h4>
+            Sucursales
+        </h4>
+
+        <p>Patitas Centro</p>
+        <p>Patitas Valle</p>
+
+    </div>
+
+
+    <div>
+
+        <h4>
+            Contacto
+        </h4>
+
+        <p>Tel: 81 1234 5678</p>
+        <p>contacto@patitas.com</p>
+
+    </div>
+
+</footer>
+
+
+<div class="copyright">
+    © 2026 Clínica Veterinaria Patitas
+</div>
+
+
+</body>
+
+</html>

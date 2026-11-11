@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Mis Mascotas - Veterinaria Patitas</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/estilos.css') }}">
+</head>
+
+<body>
+
+
+<!-- ==============================
+     MENÚ
+============================== -->
+
+<header>
+
+    <nav class="navbar">
+
+        <div class="logo">
+            🐾 Patitas
+        </div>
+
+        <div class="botones-menu">
+
+            <a href="{{ url_for('inicio') }}"
+               class="btn-login">
+                Inicio
+            </a>
+
+            <a href="{{ url_for('citas') }}"
+               class="btn-login">
+                Mis Citas
+            </a>
+
+            <a href="{{ url_for('productos') }}"
+               class="btn-login">
+                Productos
+            </a>
+
+            <a href="{{ url_for('logout') }}"
+               class="btn-cita">
+                Cerrar sesión
+            </a>
+
+        </div>
+
+    </nav>
+
+</header>
+
+
+<!-- ==============================
+     ENCABEZADO
+============================== -->
+
+<section class="pagina-titulo">
+
+    <p>
+        CLÍNICA VETERINARIA PATITAS
+    </p>
+
+    <h1>
+        🐾 Mis Mascotas
+    </h1>
+
+    <span>
+        Registra y consulta tus mascotas
+    </span>
+
+</section>
+
+
+<!-- ==============================
+     CONTENIDO
+============================== -->
+
+<section class="seccion">
+
+
+    <div class="contenedor-mascotas">
+
+
+        <!-- FORMULARIO -->
+
+        <div class="formulario mascota-formulario">
+
+            <h2>
+                Registrar mascota
+            </h2>
+
+
+            {% if error %}
+
+                <div class="mensaje-error">
+                    {{ error }}
+                </div>
+
+            {% endif %}
+
+
+            <form method="POST">
+<input type="hidden" name="_csrf" value="{{ csrf_token() }}">
+
+
+                <!-- NOMBRE -->
+
+                <label>
+                    Nombre de la mascota
+                </label>
+
+                <input
+                    type="text"
+                    name="nombre"
+                    placeholder="Ej. Max"
+                    required
+                >
+
+
+                <!-- ESPECIE -->
+
+                <label>
+                    Especie
+                </label>
+
+                <select
+                    name="especie"
+                    required
+                >
+
+                    <option value="">
+                        Selecciona una especie
+                    </option>
+
+                    <option value="Perro">
+                        Perro
+                    </option>
+
+                    <option value="Gato">
+                        Gato
+                    </option>
+
+                    <option value="Ave">
+                        Ave
+                    </option>
+
+                    <option value="Conejo">
+                        Conejo
+                    </option>
+
+                    <option value="Otro">
+                        Otro
+                    </option>
+
+                </select>
+
+
+                <!-- RAZA -->
+
+                <label>
+                    Raza
+                </label>
+
+                <input
+                    type="text"
+                    name="raza"
+                    placeholder="Ej. Border Collie"
+                >
+
+
+                <!-- EDAD -->
+
+                <label>
+                    Edad
+                </label>
+
+                <input
+                    type="number"
+                    name="edad"
+                    min="0"
+                    placeholder="Ej. 3"
+                >
+
+
+                <!-- SEXO -->
+
+                <label>
+                    Sexo
+                </label>
+
+                <select name="sexo">
+
+                    <option value="">
+                        Selecciona
+                    </option>
+
+                    <option value="Macho">
+                        Macho
+                    </option>
+
+                    <option value="Hembra">
+                        Hembra
+                    </option>
+
+                </select>
+
+
+                <button
+                    type="submit"
+                    class="boton-formulario">
+
+                    Registrar mascota
+
+                </button>
+
+            </form>
+
+        </div>
+
+
+        <!-- LISTA -->
+
+        <div class="lista-mascotas">
+
+            <h2>
+                Mascotas registradas
+            </h2>
+
+
+            {% if mascotas %}
+
+
+                {% for mascota in mascotas %}
+
+                    <div class="tarjeta-mascota">
+
+
+                        {% if mascota["especie"] == "Perro" %}
+
+                            <div class="mascota-icono">
+                                🐶
+                            </div>
+
+
+                        {% elif mascota["especie"] == "Gato" %}
+
+                            <div class="mascota-icono">
+                                🐱
+                            </div>
+
+
+                        {% elif mascota["especie"] == "Ave" %}
+
+                            <div class="mascota-icono">
+                                🐦
+                            </div>
+
+
+                        {% elif mascota["especie"] == "Conejo" %}
+
+                            <div class="mascota-icono">
+                                🐰
+                            </div>
+
+
+                        {% else %}
+
+                            <div class="mascota-icono">
+                                🐾
+                            </div>
+
+                        {% endif %}
+
+
+                        <div>
+
+                            <h3>
+                                {{ mascota["nombre"] }}
+                            </h3>
+
+
+                            <p>
+
+                                <strong>
+                                    Especie:
+                                </strong>
+
+                                {{ mascota["especie"] }}
+
+                            </p>
+
+
+                            <p>
+
+                                <strong>
+                                    Raza:
+                                </strong>
+
+                                {{ mascota["raza"] or "No especificada" }}
+
+                            </p>
+
+
+                            <p>
+
+                                <strong>
+                                    Edad:
+                                </strong>
+
+
+                                {% if mascota["edad"] is not none %}
+
+                                    {{ mascota["edad"] }} años
+
+                                {% else %}
+
+                                    No especificada
+
+                                {% endif %}
+
+                            </p>
+
+
+                            <p>
+
+                                <strong>
+                                    Sexo:
+                                </strong>
+
+                                {{ mascota["sexo"] or "No especificado" }}
+
+                            </p>
+
+                        </div>
+                        <form method="post" onsubmit="return confirm('¿Desactivar esta mascota? Si tiene citas o historial no será posible.')" style="padding:10px">
+                            <input type="hidden" name="_csrf" value="{{ csrf_token() }}">
+                            <input type="hidden" name="accion" value="eliminar">
+                            <input type="hidden" name="id_mascota" value="{{ mascota['id_mascota'] }}">
+                            <button type="submit">Desactivar mascota</button>
+                        </form>
+                    </div>
+
+                {% endfor %}
+
+
+                <a href="{{ url_for('citas') }}"
+                   class="boton-ir">
+
+                    📅 Agendar una cita
+
+                </a>
+
+
+            {% else %}
+
+                <div class="sin-mascotas">
+
+                    <div>
+                        🐾
+                    </div>
+
+                    <h3>
+                        No tienes mascotas registradas
+                    </h3>
+
+                    <p>
+                        Registra tu primera mascota utilizando
+                        el formulario.
+                    </p>
+
+                </div>
+
+            {% endif %}
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<footer>
+
+    <div>
+
+        <h3>
+            🐾 Clínica Veterinaria Patitas
+        </h3>
+
+        <p>
+            Cuidamos a quienes forman parte de tu familia.
+        </p>
+
+    </div>
+
+
+    <div>
+
+        <h4>
+            Sucursales
+        </h4>
+
+        <p>Patitas Centro</p>
+        <p>Patitas Valle</p>
+
+    </div>
+
+
+    <div>
+
+        <h4>
+            Contacto
+        </h4>
+
+        <p>Tel: 81 1234 5678</p>
+        <p>contacto@patitas.com</p>
+
+    </div>
+
+</footer>
+
+
+<div class="copyright">
+    © 2026 Clínica Veterinaria Patitas
+</div>
+
+
+</body>
+
+</html>

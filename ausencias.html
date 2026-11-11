@@ -1,0 +1,853 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Clínica Veterinaria Patitas</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/estilos.css') }}">
+</head>
+
+<body>
+
+
+<!-- ==========================================
+     MENÚ
+========================================== -->
+
+<header>
+
+    <nav class="navbar">
+
+        <div class="logo">
+            🐾 Patitas
+        </div>
+
+
+        <div class="menu">
+
+            <a href="#inicio">
+                Inicio
+            </a>
+
+            <a href="#servicios">
+                Servicios
+            </a>
+
+            <a href="#productos">
+                Productos
+            </a>
+
+            <a href="#doctores">
+                Doctores
+            </a>
+
+            <a href="#sucursales">
+                Sucursales
+            </a>
+
+            {% if session.get("tipo_usuario") == "Cliente" %}
+
+    <a href="/notificaciones">
+
+        🔔 Notificaciones
+
+        {% if notificaciones_pendientes > 0 %}
+
+            ({{ notificaciones_pendientes }})
+
+        {% endif %}
+
+    </a>
+
+{% endif %}
+
+
+            {% if session.get("tipo_usuario") == "Cliente" %}
+
+                <a href="{{ url_for('mascotas') }}">
+                    Mis Mascotas
+                </a>
+
+                <a href="{{ url_for('citas') }}">
+                    Mis Citas
+                </a>
+
+                <a href="{{ url_for('productos') }}">
+                    Comprar
+                </a>
+
+            {% endif %}
+
+        </div>
+
+
+        <div class="botones-menu">
+
+
+            {% if session.get("id_usuario") %}
+
+
+                {% if session.get("tipo_usuario") == "Administrador" %}
+
+                    <a href="{{ url_for('panel_admin') }}"
+                       class="btn-login">
+
+                        Panel Admin
+
+                    </a>
+
+                {% endif %}
+
+
+                <span style="
+                    color: #555;
+                    font-weight: bold;
+                ">
+
+                    Hola, {{ session["nombre"] }}
+
+                </span>
+
+
+                <a href="{{ url_for('logout') }}"
+                   class="btn-cita">
+
+                    Cerrar sesión
+
+                </a>
+
+
+            {% else %}
+
+
+                <a href="{{ url_for('login') }}"
+                   class="btn-login">
+
+                    Iniciar sesión
+
+                </a>
+
+
+                <a href="{{ url_for('registro') }}"
+                   class="btn-cita">
+
+                    Registrarse
+
+                </a>
+
+
+            {% endif %}
+
+
+        </div>
+
+    </nav>
+
+</header>
+
+
+<!-- ==========================================
+     HERO
+========================================== -->
+
+<section class="hero"
+         id="inicio">
+
+
+    <div class="hero-texto">
+
+
+        <span class="subtitulo">
+
+            CUIDAMOS A QUIENES MÁS QUIERES
+
+        </span>
+
+
+        <h1>
+
+            El mejor cuidado para tu mascota
+
+        </h1>
+
+
+        <p>
+
+            En Clínica Veterinaria Patitas
+            cuidamos la salud y bienestar
+            de tus mascotas con atención
+            profesional y cercana.
+
+        </p>
+
+
+        <div class="hero-botones">
+
+
+            {% if session.get("tipo_usuario") == "Cliente" %}
+
+                <a href="{{ url_for('citas') }}"
+                   class="boton-principal">
+
+                    Agendar cita
+
+                </a>
+
+            {% else %}
+
+                <a href="{{ url_for('login') }}"
+                   class="boton-principal">
+
+                    Agendar cita
+
+                </a>
+
+            {% endif %}
+
+
+            <a href="#servicios"
+               class="boton-secundario">
+
+                Ver servicios
+
+            </a>
+
+
+        </div>
+
+
+    </div>
+
+
+    <div class="hero-mascota">
+
+        🐶
+
+    </div>
+
+
+</section>
+
+
+<!-- ==========================================
+     SERVICIOS
+========================================== -->
+
+<section class="seccion"
+         id="servicios">
+
+
+    <div class="titulo-seccion">
+
+        <p>
+            NUESTROS SERVICIOS
+        </p>
+
+        <h2>
+            Todo lo que tu mascota necesita
+        </h2>
+
+    </div>
+
+
+    <div class="tarjetas">
+
+
+        {% if servicios %}
+
+
+            {% for servicio in servicios %}
+
+
+                <div class="tarjeta">
+
+
+                    <div style="
+                        font-size: 45px;
+                        margin-bottom: 10px;
+                    ">
+
+                        🩺
+
+                    </div>
+
+
+                    <h3>
+
+                        {{ servicio["nombre"] }}
+
+                    </h3>
+
+
+                    <p>
+
+                        {{ servicio["descripcion"] }}
+
+                    </p>
+
+
+                    <p style="
+                        margin-top: 12px;
+                        font-weight: bold;
+                        color: #198754;
+                    ">
+
+                        ${{ servicio["precio"] }}
+
+                    </p>
+
+
+                </div>
+
+
+            {% endfor %}
+
+
+        {% else %}
+
+
+            <div class="tarjeta">
+
+                <p>
+                    No hay servicios disponibles.
+                </p>
+
+            </div>
+
+
+        {% endif %}
+
+
+    </div>
+
+
+</section>
+
+
+<!-- ==========================================
+     PRODUCTOS
+========================================== -->
+
+<section class="seccion fondo"
+         id="productos">
+
+
+    <div class="titulo-seccion">
+
+        <p>
+            PRODUCTOS
+        </p>
+
+        <h2>
+            Productos para tus mascotas
+        </h2>
+
+    </div>
+
+
+    <div class="tarjetas">
+
+
+        {% if productos %}
+
+
+            {% for producto in productos %}
+
+
+                <div class="producto">
+
+
+                    <div class="producto-imagen">
+
+
+                        {% if "Alimento" in producto["nombre"] %}
+
+                            🥣
+
+                        {% elif "Pelota" in producto["nombre"] %}
+
+                            🎾
+
+                        {% elif "Shampoo" in producto["nombre"] %}
+
+                            🧴
+
+                        {% elif "Collar" in producto["nombre"] %}
+
+                            🦴
+
+                        {% else %}
+
+                            🛍️
+
+                        {% endif %}
+
+
+                    </div>
+
+
+                    <h3>
+
+                        {{ producto["nombre"] }}
+
+                    </h3>
+
+
+                    <p>
+
+                        {{ producto["descripcion"] }}
+
+                    </p>
+
+
+                    <p>
+
+                        <strong>
+                            Categoría:
+                        </strong>
+
+                        {{ producto["categoria"] }}
+
+                    </p>
+
+
+                    <p style="
+                        font-size: 20px;
+                        font-weight: bold;
+                        color: #198754;
+                    ">
+
+                        ${{ producto["precio"] }}
+
+                    </p>
+
+
+                    {% if session.get("tipo_usuario") == "Cliente" %}
+
+
+                        <a href="{{ url_for('productos') }}"
+                           class="boton-principal">
+
+                            Comprar
+
+                        </a>
+
+
+                    {% else %}
+
+
+                        <a href="{{ url_for('login') }}"
+                           class="boton-principal">
+
+                            Comprar
+
+                        </a>
+
+
+                    {% endif %}
+
+
+                </div>
+
+
+            {% endfor %}
+
+
+        {% else %}
+
+
+            <div class="tarjeta">
+
+                <p>
+                    No hay productos disponibles.
+                </p>
+
+            </div>
+
+
+        {% endif %}
+
+
+    </div>
+
+
+</section>
+
+
+<!-- ==========================================
+     DOCTORES
+========================================== -->
+
+<section class="seccion"
+         id="doctores">
+
+
+    <div class="titulo-seccion">
+
+        <p>
+            NUESTRO EQUIPO
+        </p>
+
+        <h2>
+            Conoce a nuestros doctores
+        </h2>
+
+    </div>
+
+
+    <div class="tarjetas">
+
+
+        {% if doctores %}
+
+
+            {% for doctor in doctores %}
+
+
+                <div class="doctor">
+
+
+                    <div class="doctor-imagen">
+
+                        👨‍⚕️
+
+                    </div>
+
+
+                    <h3>
+
+                        {{ doctor["nombre"] }}
+
+                    </h3>
+
+
+                    <p>
+
+                        <strong>
+                            Especialidad:
+                        </strong>
+
+                        {{ doctor["especialidad"] }}
+
+                    </p>
+
+
+                    <p>
+
+                        <strong>
+                            Teléfono:
+                        </strong>
+
+                        {% if doctor["telefono"] %}
+
+                            📞 {{ doctor["telefono"] }}
+
+                        {% else %}
+
+                            No disponible
+
+                        {% endif %}
+
+                    </p>
+
+
+                    <p>
+
+                        <strong>
+                            Sucursal:
+                        </strong>
+
+                        📍 {{ doctor["sucursal"] }}
+
+                    </p>
+
+
+                </div>
+
+
+            {% endfor %}
+
+
+        {% else %}
+
+
+            <div class="tarjeta">
+
+                <p>
+                    No hay doctores registrados.
+                </p>
+
+            </div>
+
+
+        {% endif %}
+
+
+    </div>
+
+
+</section>
+
+
+<!-- ==========================================
+     SUCURSALES
+========================================== -->
+
+<section class="seccion fondo"
+         id="sucursales">
+
+
+    <div class="titulo-seccion">
+
+        <p>
+            SUCURSALES
+        </p>
+
+        <h2>
+            Encuentra la más cercana
+        </h2>
+
+    </div>
+
+
+    <div class="sucursales">
+
+
+        {% if sucursales %}
+
+
+            {% for sucursal in sucursales %}
+
+
+                <div class="sucursal">
+
+
+                    <div style="
+                        font-size: 45px;
+                        margin-bottom: 10px;
+                    ">
+
+                        🏥
+
+                    </div>
+
+
+                    <h3>
+
+                        {{ sucursal["nombre"] }}
+
+                    </h3>
+
+
+                    <p>
+
+                        <strong>
+                            Ciudad:
+                        </strong>
+
+                        {{ sucursal["ciudad"] }}
+
+                    </p>
+
+
+                    <p>
+
+                        <strong>
+                            Dirección:
+                        </strong>
+
+                        {{ sucursal["direccion"] }}
+
+                    </p>
+
+
+                    <p>
+
+                        <strong>
+                            Horario:
+                        </strong>
+
+                        {{ sucursal["horario"] }}
+
+                    </p>
+
+
+                </div>
+
+
+            {% endfor %}
+
+
+        {% else %}
+
+
+            <div class="sucursal">
+
+                <p>
+                    No hay sucursales disponibles.
+                </p>
+
+            </div>
+
+
+        {% endif %}
+
+
+    </div>
+
+
+</section>
+
+
+<!-- ==========================================
+     AGENDAR CITA
+========================================== -->
+
+<section class="cta">
+
+
+    <h2>
+
+        ¿Tu mascota necesita atención?
+
+    </h2>
+
+
+    <p>
+
+        Agenda una cita con nuestros
+        médicos veterinarios.
+
+    </p>
+
+
+    {% if session.get("tipo_usuario") == "Cliente" %}
+
+
+        <a href="{{ url_for('citas') }}"
+           class="boton-blanco">
+
+            Agendar cita
+
+        </a>
+
+
+    {% else %}
+
+
+        <a href="{{ url_for('login') }}"
+           class="boton-blanco">
+
+            Iniciar sesión para agendar
+
+        </a>
+
+
+    {% endif %}
+
+
+</section>
+
+
+<!-- ==========================================
+     FOOTER
+========================================== -->
+
+<footer>
+
+
+    <div>
+
+
+        <h3>
+
+            🐾 Clínica Veterinaria Patitas
+
+        </h3>
+
+
+        <p>
+
+            Cuidamos la salud y bienestar
+            de tus mascotas.
+
+        </p>
+
+
+    </div>
+
+
+    <div>
+
+
+        <h4>
+
+            Servicios
+
+        </h4>
+
+
+        <p>
+            Consulta general
+        </p>
+
+        <p>
+            Vacunación
+        </p>
+
+        <p>
+            Desparasitación
+        </p>
+
+        <p>
+            Estética
+        </p>
+
+
+    </div>
+
+
+    <div>
+
+
+        <h4>
+
+            Sucursales
+
+        </h4>
+
+
+        <p>
+            Patitas Centro
+        </p>
+
+        <p>
+            Patitas Valle
+        </p>
+
+
+    </div>
+
+
+</footer>
+
+
+<div class="copyright">
+
+    © 2026 Clínica Veterinaria Patitas
+
+</div>
+
+
+<script src="{{ url_for('static', filename='js/script.js') }}"></script>
+
+
+</body>
+
+</html>

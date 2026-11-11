@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Administrar Productos - Patitas</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/estilos.css') }}">
+
+</head>
+
+<body>
+
+
+<header>
+
+    <nav class="navbar">
+
+        <div class="logo">
+            🐾 Patitas Admin
+        </div>
+
+        <div class="botones-menu">
+
+            <a href="{{ url_for('panel_admin') }}"
+               class="btn-login">
+
+                Panel
+
+            </a>
+
+            <a href="{{ url_for('inicio') }}"
+               class="btn-login">
+
+                Ver página
+
+            </a>
+
+            <a href="{{ url_for('logout') }}"
+               class="btn-cita">
+
+                Cerrar sesión
+
+            </a>
+
+        </div>
+
+    <a href="{{ url_for('movimiento_inventario') }}" class="btn-login">Entradas / Salidas</a></nav>
+
+</header>
+
+
+<section class="pagina-titulo">
+
+    <p>
+        ADMINISTRACIÓN
+    </p>
+
+    <h1>
+        🛍️ Productos e Inventario
+    </h1>
+
+    <span>
+        Administra los productos disponibles en Patitas
+    </span>
+
+</section>
+
+
+<section class="seccion">
+
+
+    <div class="contenedor-compras">
+
+
+        <!-- AGREGAR PRODUCTO -->
+
+        <div class="formulario">
+
+            <h2>
+                Agregar producto
+            </h2>
+
+
+            {% if error %}
+
+                <div class="mensaje-error">
+                    {{ error }}
+                </div>
+
+            {% endif %}
+
+
+            {% if exito == "agregado" %}
+
+                <div class="mensaje-exito">
+                    Producto agregado correctamente.
+                </div>
+
+            {% endif %}
+
+
+            {% if exito == "inventario" %}
+
+                <div class="mensaje-exito">
+                    Inventario actualizado correctamente.
+                </div>
+
+            {% endif %}
+
+
+            <form method="POST">
+<input type="hidden" name="_csrf" value="{{ csrf_token() }}">
+
+                <input
+                    type="hidden"
+                    name="accion"
+                    value="agregar"
+                >
+
+
+                <label>
+                    Nombre
+                </label>
+
+                <input
+                    type="text"
+                    name="nombre"
+                    placeholder="Ej. Collar para perro"
+                    required
+                >
+
+
+                <label>
+                    Descripción
+                </label>
+
+                <input
+                    type="text"
+                    name="descripcion"
+                    placeholder="Descripción del producto"
+                >
+
+
+                <label>
+                    Categoría
+                </label>
+
+                <select name="categoria" required>
+
+                    <option value="">
+                        Selecciona
+                    </option>
+
+                    <option value="Alimentos">
+                        Alimentos
+                    </option>
+
+                    <option value="Accesorios">
+                        Accesorios
+                    </option>
+
+                    <option value="Higiene">
+                        Higiene
+                    </option>
+
+                    <option value="Juguetes">
+                        Juguetes
+                    </option>
+
+                    <option value="Otros">
+                        Otros
+                    </option>
+
+                </select>
+
+
+                <label>
+                    Precio
+                </label>
+
+                <input
+                    type="number"
+                    name="precio"
+                    step="0.01"
+                    min="0"
+                    placeholder="Ej. 199.99"
+                    required
+                >
+
+
+                <button
+                    type="submit"
+                    class="boton-formulario">
+
+                    Agregar producto
+
+                </button>
+
+            </form>
+
+        </div>
+
+
+        <!-- PRODUCTOS -->
+
+        <div>
+
+            <h2 class="titulo-lista">
+                Productos registrados
+            </h2>
+
+
+            {% if exito == "editado" %}<div class="mensaje-exito">Producto actualizado correctamente.</div>{% endif %}
+            {% if exito == "eliminado" %}<div class="mensaje-exito">Producto desactivado correctamente.</div>{% endif %}
+
+            {% for producto in productos %}
+
+                <div class="producto-stock">
+
+                    <div class="producto-stock-icono">
+                        🛍️
+                    </div>
+
+                    <div>
+
+                        <h3>
+                            {{ producto["nombre"] }}
+                        </h3>
+
+                        <p>
+                            {{ producto["descripcion"] }}
+                        </p>
+
+                        <p>
+                            <strong>Categoría:</strong>
+                            {{ producto["categoria"] }}
+                        </p>
+
+                        <p>
+                            <strong>Precio:</strong>
+                            ${{ producto["precio"] }}
+                        </p>
+
+                    </div>
+
+                    <details style="margin:16px 0; width:100%">
+                        <summary style="cursor:pointer;font-weight:bold">Editar producto</summary>
+                        <form method="POST" style="display:grid;gap:8px;padding:12px 0">
+<input type="hidden" name="_csrf" value="{{ csrf_token() }}">
+                            <input type="hidden" name="accion" value="editar">
+                            <input type="hidden" name="id_producto" value="{{ producto['id_producto'] }}">
+                            <label>Nombre</label><input name="nombre" value="{{ producto['nombre'] }}" required>
+                            <label>Descripción</label><input name="descripcion" value="{{ producto['descripcion'] or '' }}">
+                            <label>Categoría</label><select name="categoria" required>
+                            {% for categoria in ['Alimentos','Accesorios','Higiene','Juguetes','Otros'] %}
+                                <option value="{{ categoria }}" {% if producto['categoria'] == categoria %}selected{% endif %}>{{ categoria }}</option>
+                            {% endfor %}</select>
+                            <label>Precio</label><input type="number" name="precio" min="0" step="0.01" value="{{ producto['precio'] }}" required>
+                            <button type="submit" class="btn-cita">Guardar cambios</button>
+                        </form>
+                        <form method="POST" onsubmit="return confirm('¿Desactivar este producto? Se conservarán las ventas y el historial.')">
+<input type="hidden" name="_csrf" value="{{ csrf_token() }}">
+                            <input type="hidden" name="accion" value="eliminar">
+                            <input type="hidden" name="id_producto" value="{{ producto['id_producto'] }}">
+                            <button type="submit" style="background:#a52a2a;color:white;padding:10px;border:0;border-radius:6px;cursor:pointer">Desactivar producto</button>
+                        </form>
+                        {% if producto['activo'] == 0 %}
+                        <form method="POST"><input type="hidden" name="_csrf" value="{{ csrf_token() }}"><input type="hidden" name="accion" value="activar"><input type="hidden" name="id_producto" value="{{ producto['id_producto'] }}"><button type="submit">Reactivar producto</button></form>
+                        {% else %}<p>Producto activo.</p>{% endif %}
+                    </details>
+                </div>
+
+            {% endfor %}
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- INVENTARIO -->
+<section class="seccion fondo" id="inventario">
+  <div class="titulo-seccion">
+    <p>CONTROL DE MERCANCÍA</p>
+    <h2>Modificar existencias</h2>
+    <p>Las entradas aumentan el stock y las salidas lo reducen. Cada movimiento queda registrado con su fecha y motivo.</p>
+    {% if request.args.get('movimiento') == '1' %}
+      <p class="mensaje-exito">Movimiento de inventario guardado correctamente.</p>
+    {% endif %}
+  </div>
+  <div class="tabla-contenedor">
+    <table class="tabla-admin">
+      <thead><tr><th>Producto</th><th>Sucursal</th><th>Existencias</th><th>Entrada (+)</th><th>Salida (−)</th></tr></thead>
+      <tbody>
+        {% for item in inventario %}
+        <tr>
+          <td>{{ item['producto'] }}</td>
+          <td>{{ item['sucursal'] }}</td>
+          <td><strong>{{ item['existencias'] }}</strong>{% if item['existencias'] <= 5 %}<small class="stock-aviso">Stock bajo</small>{% endif %}</td>
+          <td>
+            <form method="post" action="{{ url_for('movimiento_inventario') }}" class="stock-movimiento">
+              <input type="hidden" name="_csrf" value="{{ csrf_token() }}">
+              <input type="hidden" name="id_producto" value="{{ item['id_producto'] }}">
+              <input type="hidden" name="id_sucursal" value="{{ item['id_sucursal'] }}">
+              <input type="hidden" name="tipo" value="entrada">
+              <input type="hidden" name="retorno" value="productos">
+              <input type="number" name="cantidad" min="1" max="100000" step="1" placeholder="Cant." aria-label="Cantidad que entra" required>
+              <input type="text" name="motivo" maxlength="200" placeholder="Proveedor / motivo" aria-label="Motivo de entrada" required>
+              <button type="submit" class="btn-cita">Agregar</button>
+            </form>
+          </td>
+          <td>
+            <form method="post" action="{{ url_for('movimiento_inventario') }}" class="stock-movimiento">
+              <input type="hidden" name="_csrf" value="{{ csrf_token() }}">
+              <input type="hidden" name="id_producto" value="{{ item['id_producto'] }}">
+              <input type="hidden" name="id_sucursal" value="{{ item['id_sucursal'] }}">
+              <input type="hidden" name="tipo" value="salida">
+              <input type="hidden" name="retorno" value="productos">
+              <input type="number" name="cantidad" min="1" max="100000" step="1" placeholder="Cant." aria-label="Cantidad que sale" required>
+              <input type="text" name="motivo" maxlength="200" placeholder="Merma / motivo" aria-label="Motivo de salida" required>
+              <button type="submit" class="btn-login">Retirar</button>
+            </form>
+          </td>
+        </tr>
+        {% else %}<tr><td colspan="5">No hay inventario disponible.</td></tr>{% endfor %}
+      </tbody>
+    </table>
+  </div>
+  <p class="stock-link"><a class="btn-login" href="{{ url_for('movimiento_inventario') }}">Ver historial de movimientos</a></p>
+</section>
+
+<footer>
+
+    <div>
+
+        <h3>
+            🐾 Clínica Veterinaria Patitas
+        </h3>
+
+        <p>
+            Panel administrativo.
+        </p>
+
+    </div>
+
+
+    <div>
+
+        <h4>
+            Administración
+        </h4>
+
+        <p>
+            Productos e inventario
+        </p>
+
+    </div>
+
+
+    <div>
+
+        <h4>
+            Sistema
+        </h4>
+
+        <p>
+            Clínica Veterinaria Patitas
+        </p>
+
+    </div>
+
+</footer>
+
+
+<div class="copyright">
+
+    © 2026 Clínica Veterinaria Patitas
+
+</div>
+
+
+</body>
+
+</html>

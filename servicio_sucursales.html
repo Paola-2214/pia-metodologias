@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Administrar Servicios - Patitas</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/estilos.css') }}">
+</head>
+
+<body>
+
+
+<!-- ==========================================
+     MENÚ
+========================================== -->
+
+<header>
+
+    <nav class="navbar">
+
+        <div class="logo">
+            🐾 Patitas Admin
+        </div>
+
+        <div class="botones-menu">
+
+            <a href="/admin"
+               class="btn-login">
+
+                Panel
+
+            </a>
+
+            <a href="/admin/productos"
+               class="btn-login">
+
+                Productos
+
+            </a>
+
+            <a href="/"
+               class="btn-login">
+
+                Ver página
+
+            </a>
+
+            <a href="/logout"
+               class="btn-cita">
+
+                Cerrar sesión
+
+            </a>
+
+        </div>
+
+    <a href="{{ url_for('servicios_sucursales') }}" class="btn-login">Sucursales que ofrecen servicios</a></nav>
+
+</header>
+
+
+<!-- ==========================================
+     ENCABEZADO
+========================================== -->
+
+<section class="pagina-titulo">
+
+    <p>
+        ADMINISTRACIÓN
+    </p>
+
+    <h1>
+        🩺 Servicios
+    </h1>
+
+    <span>
+        Administra los servicios veterinarios
+        de Clínica Veterinaria Patitas
+    </span>
+
+</section>
+
+
+<!-- ==========================================
+     AGREGAR SERVICIO
+========================================== -->
+
+<section class="seccion">
+
+    <div class="titulo-seccion">
+
+        <p>
+            NUEVO SERVICIO
+        </p>
+
+        <h2>
+            Agregar servicio
+        </h2>
+
+    </div>
+
+
+    <div class="contenedor-formulario">
+
+        <div class="formulario">
+
+
+            <!-- MENSAJE DE ERROR -->
+
+            {% if error %}
+
+                <div class="mensaje-error">
+
+                    {{ error }}
+
+                </div>
+
+            {% endif %}
+
+
+            <!-- MENSAJES DE ÉXITO -->
+
+            {% if exito == "agregado" %}
+
+                <div class="mensaje-exito">
+
+                    Servicio agregado correctamente.
+
+                </div>
+
+            {% endif %}
+
+
+            {% if exito == "editado" %}
+
+                <div class="mensaje-exito">
+
+                    Servicio actualizado correctamente.
+
+                </div>
+
+            {% endif %}
+
+
+            {% if exito == "eliminado" %}
+
+                <div class="mensaje-exito">
+
+                    Servicio eliminado correctamente.
+
+                </div>
+
+            {% endif %}
+
+
+            <!-- FORMULARIO -->
+
+            <form method="POST">
+<input type="hidden" name="_csrf" value="{{ csrf_token() }}">
+
+
+                <input
+                    type="hidden"
+                    name="accion"
+                    value="agregar"
+                >
+
+
+                <label>
+                    Nombre del servicio
+                </label>
+
+                <input
+                    type="text"
+                    name="nombre"
+                    placeholder="Ej. Limpieza dental"
+                    required
+                >
+
+
+                <label>
+                    Descripción
+                </label>
+
+                <textarea
+                    name="descripcion"
+                    placeholder="Describe brevemente el servicio"
+                    rows="4"
+                ></textarea>
+
+
+                <label>
+                    Precio
+                </label>
+
+                <input
+                    type="number"
+                    name="precio"
+                    placeholder="Ej. 450"
+                    min="0"
+                    step="0.01"
+                    required
+                >
+
+
+                <button
+                    type="submit"
+                    class="boton-formulario">
+
+                    Agregar servicio
+
+                </button>
+
+
+            </form>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- ==========================================
+     SERVICIOS REGISTRADOS
+========================================== -->
+
+<section class="seccion fondo">
+
+    <div class="titulo-seccion">
+
+        <p>
+            SERVICIOS
+        </p>
+
+        <h2>
+            Servicios registrados
+        </h2>
+
+    </div>
+
+
+    <div style="
+        max-width: 1100px;
+        margin: auto;
+    ">
+
+
+        {% if servicios %}
+
+
+            {% for servicio in servicios %}
+
+
+                <div class="tarjeta-servicio-admin">
+
+
+                    <form method="POST">
+<input type="hidden" name="_csrf" value="{{ csrf_token() }}">
+
+
+                        <!-- ID DEL SERVICIO -->
+
+                        <input
+                            type="hidden"
+                            name="id_servicio"
+                            value="{{ servicio['id_servicio'] }}"
+                        >
+
+
+                        <!-- NOMBRE -->
+
+                        <label>
+                            Nombre
+                        </label>
+
+                        <input
+                            type="text"
+                            name="nombre"
+                            value="{{ servicio['nombre'] }}"
+                            required
+                        >
+
+
+                        <!-- DESCRIPCIÓN -->
+
+                        <label>
+                            Descripción
+                        </label>
+
+                        <textarea
+                            name="descripcion"
+                            rows="3"
+                        >{{ servicio['descripcion'] or '' }}</textarea>
+
+
+                        <!-- PRECIO -->
+
+                        <label>
+                            Precio
+                        </label>
+
+                        <input
+                            type="number"
+                            name="precio"
+                            value="{{ servicio['precio'] }}"
+                            min="0"
+                            step="0.01"
+                            required
+                        >
+
+
+                        <!-- BOTONES -->
+
+                        <div class="botones-admin-servicio">
+
+
+                            <button
+                                type="submit"
+                                name="accion"
+                                value="editar"
+                                class="btn-editar">
+
+                                Guardar cambios
+
+                            </button>
+
+
+                            <button
+                                type="submit"
+                                name="accion"
+                                value="eliminar"
+                                class="btn-eliminar"
+                                onclick="
+                                    return confirm(
+                                        '¿Desactivar servicio y conservar su historial?'
+                                    );
+                                ">
+
+                                Desactivar
+
+                            </button>
+
+
+                        </div>
+
+
+                    </form>
+
+
+                </div>
+
+
+            {% endfor %}
+
+
+        {% else %}
+
+
+            <div class="sin-mascotas">
+
+                <p>
+                    No hay servicios registrados.
+                </p>
+
+            </div>
+
+
+        {% endif %}
+
+
+    </div>
+
+</section>
+
+
+<!-- ==========================================
+     INFORMACIÓN
+========================================== -->
+
+<section class="seccion">
+
+    <div class="titulo-seccion">
+
+        <p>
+            INFORMACIÓN
+        </p>
+
+        <h2>
+            ¿Qué puedes hacer aquí?
+        </h2>
+
+    </div>
+
+
+    <div class="tarjetas">
+
+
+        <div class="tarjeta">
+
+            <div style="font-size: 45px;">
+                ➕
+            </div>
+
+            <h3>
+                Agregar
+            </h3>
+
+            <p>
+                Registrar nuevos servicios
+                veterinarios.
+            </p>
+
+        </div>
+
+
+        <div class="tarjeta">
+
+            <div style="font-size: 45px;">
+                ✏️
+            </div>
+
+            <h3>
+                Editar
+            </h3>
+
+            <p>
+                Cambiar nombre, descripción
+                o precio de un servicio.
+            </p>
+
+        </div>
+
+
+        <div class="tarjeta">
+
+            <div style="font-size: 45px;">
+                🗑️
+            </div>
+
+            <h3>
+                Eliminar
+            </h3>
+
+            <p>
+                Eliminar servicios que no
+                tengan citas registradas.
+            </p>
+
+        </div>
+
+
+    </div>
+
+</section>
+
+
+<!-- ==========================================
+     VOLVER
+========================================== -->
+
+<section class="cta">
+
+    <h2>
+        Administración Patitas
+    </h2>
+
+    <p>
+        Regresa al panel para continuar
+        administrando la clínica.
+    </p>
+
+    <a href="/admin"
+       class="boton-blanco">
+
+        Volver al panel
+
+    </a>
+
+</section>
+
+
+<!-- ==========================================
+     FOOTER
+========================================== -->
+
+<footer>
+
+
+    <div>
+
+        <h3>
+            🐾 Clínica Veterinaria Patitas
+        </h3>
+
+        <p>
+            Sistema de administración
+            veterinaria.
+        </p>
+
+    </div>
+
+
+    <div>
+
+        <h4>
+            Administración
+        </h4>
+
+        <p>
+            Productos
+        </p>
+
+        <p>
+            Servicios
+        </p>
+
+        <p>
+            Doctores
+        </p>
+
+    </div>
+
+
+    <div>
+
+        <h4>
+            Sucursales
+        </h4>
+
+        <p>
+            Patitas Centro
+        </p>
+
+        <p>
+            Patitas Valle
+        </p>
+
+    </div>
+
+
+</footer>
+
+
+<div class="copyright">
+
+    © 2026 Clínica Veterinaria Patitas
+
+</div>
+
+
+</body>
+
+</html>

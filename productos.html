@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="stylesheet" href="{{ url_for('static',filename='css/estilos.css') }}">
+<title>{{ titulo|default('Veterinaria Patitas') }}</title></head>
+<body><header><nav class="navbar"><div class="logo">🐾 Veterinaria Patitas</div>
+<a href="{{ url_for('inicio') }}" class="btn-login">Inicio</a>
+<a href="{{ url_for('panel_admin') if session.get('tipo_usuario')=='Administrador' else url_for('login') }}" class="btn-login">Volver</a></nav></header>
+<section class="pagina-titulo"><p>CUENTAS Y SEGURIDAD</p><h1>{{ titulo }}</h1></section>
+<main class="seccion"><div class="seguridad-tarjeta">
+{% if error %}<p class="mensaje-error">{{ error }}</p>{% endif %}
+{% if tipo=='recuperar' %}
+<h2>¿Olvidaste tu contraseña?</h2>
+<p>Para recuperar tu contraseña, <strong>comunícate con la administración de Veterinaria Patitas</strong>.</p>
+<p>El personal verificará tu identidad y te ayudará a establecer una nueva contraseña. Por seguridad, no podemos mostrar la contraseña anterior ni recuperarla por correo desde esta página.</p>
+<a class="btn-cita" href="{{ url_for('login') }}">Volver a iniciar sesión</a>
+{% elif tipo=='cambiar' %}
+<h2>Cambiar contraseña</h2>
+<form method="post" class="seguridad-form">
+<input type="hidden" name="_csrf" value="{{ csrf_token() }}">
+<label>Contraseña actual</label><input type="password" name="actual" autocomplete="current-password" required>
+<label>Nueva contraseña (mínimo 8 caracteres)</label><input type="password" name="nueva" minlength="8" maxlength="128" autocomplete="new-password" required>
+<label>Confirmar nueva contraseña</label><input type="password" name="confirmar" minlength="8" maxlength="128" autocomplete="new-password" required>
+<button type="submit" class="btn-cita">Guardar nueva contraseña</button></form>
+{% endif %}
+</div></main></body></html>

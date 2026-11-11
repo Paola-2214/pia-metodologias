@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Calendario de Citas - Patitas</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/estilos.css') }}">
+
+    <style>
+
+        .calendario-contenedor {
+            max-width: 850px;
+            margin: auto;
+        }
+
+        .calendario {
+            background: white;
+            border-radius: 18px;
+            padding: 30px;
+
+            box-shadow:
+                0 6px 25px rgba(0, 0, 0, 0.08);
+
+            margin-bottom: 30px;
+        }
+
+        .calendario-titulo {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .calendario-titulo h2 {
+            color: #198754;
+            font-size: 28px;
+        }
+
+        .dias-semana {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+
+            text-align: center;
+
+            font-weight: bold;
+
+            color: #198754;
+
+            margin-bottom: 10px;
+        }
+
+        .dias-calendario {
+            display: grid;
+
+            grid-template-columns:
+                repeat(7, 1fr);
+
+            gap: 8px;
+        }
+
+        .dia {
+            min-height: 70px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            border-radius: 10px;
+
+            background: #f5f7f6;
+
+            color: #444;
+
+            font-weight: bold;
+        }
+
+        .dia-vacio {
+            background: transparent;
+        }
+
+        .dia-cita {
+            background: #198754;
+            color: white;
+
+            border: 3px solid #b7e4c7;
+
+            transform: scale(1.05);
+        }
+
+        .detalle-cita {
+            background: white;
+
+            padding: 30px;
+
+            border-radius: 18px;
+
+            box-shadow:
+                0 6px 25px rgba(0, 0, 0, 0.08);
+        }
+
+        .detalle-cita h2 {
+            color: #198754;
+            margin-bottom: 20px;
+        }
+
+        .detalle-cita p {
+            margin-bottom: 12px;
+            font-size: 17px;
+        }
+
+        .fecha-destacada {
+            background: #e8f7ee;
+
+            color: #198754;
+
+            padding: 12px 15px;
+
+            border-radius: 10px;
+
+            margin-bottom: 20px;
+
+            font-weight: bold;
+        }
+
+        @media (max-width: 600px) {
+
+            .calendario {
+                padding: 18px;
+            }
+
+            .dia {
+                min-height: 48px;
+                font-size: 14px;
+            }
+
+            .dias-semana {
+                font-size: 12px;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<!-- ==========================================
+     MENÚ
+========================================== -->
+
+<header>
+
+    <nav class="navbar">
+
+        <div class="logo">
+            🐾 Patitas
+        </div>
+
+        <div class="botones-menu">
+
+            <a href="/"
+               class="btn-login">
+
+                Inicio
+
+            </a>
+
+            <a href="/notificaciones"
+               class="btn-login">
+
+                🔔 Notificaciones
+
+            </a>
+
+            <a href="/citas"
+               class="btn-login">
+
+                Mis Citas
+
+            </a>
+
+            <a href="/logout"
+               class="btn-cita">
+
+                Cerrar sesión
+
+            </a>
+
+        </div>
+
+    </nav>
+
+</header>
+
+
+<!-- ==========================================
+     ENCABEZADO
+========================================== -->
+
+<section class="pagina-titulo">
+
+    <p>
+        MIS CITAS
+    </p>
+
+    <h1>
+        📅 Calendario
+    </h1>
+
+    <span>
+        Consulta la fecha de tu cita veterinaria
+    </span>
+
+</section>
+
+
+<!-- ==========================================
+     CALENDARIO
+========================================== -->
+
+<section class="seccion">
+
+    <div class="calendario-contenedor">
+
+
+        <div class="calendario">
+
+
+            <div class="calendario-titulo">
+
+                <h2 id="nombreMes">
+                    Calendario
+                </h2>
+
+            </div>
+
+
+            <div class="dias-semana">
+
+                <div>Lun</div>
+                <div>Mar</div>
+                <div>Mié</div>
+                <div>Jue</div>
+                <div>Vie</div>
+                <div>Sáb</div>
+                <div>Dom</div>
+
+            </div>
+
+
+            <div
+                class="dias-calendario"
+                id="diasCalendario">
+
+            </div>
+
+
+        </div>
+
+
+        <!-- ==================================
+             INFORMACIÓN DE LA CITA
+        =================================== -->
+
+        <div class="detalle-cita">
+
+
+            <h2>
+                🐾 Información de la cita
+            </h2>
+
+
+            <div class="fecha-destacada">
+
+                📅 {{ cita["fecha"] }}
+                &nbsp; | &nbsp;
+                🕐 {{ cita["hora"] }}
+
+            </div>
+
+
+            <p>
+
+                <strong>
+                    Mascota:
+                </strong>
+
+                🐶 {{ cita["mascota"] }}
+
+            </p>
+
+
+            <p>
+
+                <strong>
+                    Servicio:
+                </strong>
+
+                🩺 {{ cita["servicio"] }}
+
+            </p>
+
+
+            <p>
+
+                <strong>
+                    Doctor:
+                </strong>
+
+                👨‍⚕️ {{ cita["doctor"] }}
+
+            </p>
+
+
+            <p>
+
+                <strong>
+                    Sucursal:
+                </strong>
+
+                📍 {{ cita["sucursal"] }}
+
+            </p>
+
+
+            <p>
+
+                <strong>
+                    Estado:
+                </strong>
+
+                <span class="estado-cita">
+
+                    {{ cita["estado"] }}
+
+                </span>
+
+            </p>
+
+
+        </div>
+
+
+    </div>
+
+</section>
+
+
+<!-- ==========================================
+     JAVASCRIPT DEL CALENDARIO
+========================================== -->
+
+<script>
+
+    const fechaCita = "{{ cita['fecha'] }}";
+
+    const partesFecha = fechaCita.split("-");
+
+    const anio = parseInt(partesFecha[0]);
+    const mes = parseInt(partesFecha[1]) - 1;
+    const diaCita = parseInt(partesFecha[2]);
+
+
+    const nombresMeses = [
+        "Enero",
+        "Febrero",
+        "Marzo",
+        "Abril",
+        "Mayo",
+        "Junio",
+        "Julio",
+        "Agosto",
+        "Septiembre",
+        "Octubre",
+        "Noviembre",
+        "Diciembre"
+    ];
+
+
+    document.getElementById(
+        "nombreMes"
+    ).textContent =
+        nombresMeses[mes] + " " + anio;
+
+
+    const contenedor =
+        document.getElementById(
+            "diasCalendario"
+        );
+
+
+    const primerDia =
+        new Date(
+            anio,
+            mes,
+            1
+        ).getDay();
+
+
+    /*
+       JavaScript:
+       Domingo = 0
+       Lunes = 1
+
+       Nuestro calendario comienza en lunes.
+    */
+
+    let espaciosIniciales =
+        primerDia === 0
+        ? 6
+        : primerDia - 1;
+
+
+    const diasDelMes =
+        new Date(
+            anio,
+            mes + 1,
+            0
+        ).getDate();
+
+
+    // ESPACIOS VACÍOS
+
+    for (
+        let i = 0;
+        i < espaciosIniciales;
+        i++
+    ) {
+
+        const vacio =
+            document.createElement("div");
+
+        vacio.classList.add(
+            "dia",
+            "dia-vacio"
+        );
+
+        contenedor.appendChild(vacio);
+
+    }
+
+
+    // DÍAS DEL MES
+
+    for (
+        let dia = 1;
+        dia <= diasDelMes;
+        dia++
+    ) {
+
+        const elementoDia =
+            document.createElement("div");
+
+
+        elementoDia.classList.add("dia");
+
+
+        elementoDia.textContent = dia;
+
+
+        // MARCAR EL DÍA DE LA CITA
+
+        if (dia === diaCita) {
+
+            elementoDia.classList.add(
+                "dia-cita"
+            );
+
+
+            elementoDia.title =
+                "Cita de {{ cita['mascota'] }}";
+
+        }
+
+
+        contenedor.appendChild(
+            elementoDia
+        );
+
+    }
+
+</script>
+
+
+</body>
+
+</html>

@@ -1,0 +1,19 @@
+import sqlite3
+import os
+
+ruta_db = os.path.join("database", "patitas.db")
+ruta_sql = os.path.join("database", "crear_base.sql")
+
+if os.path.exists(ruta_db):
+    print("La base de datos ya existe.")
+else:
+    conexion = sqlite3.connect(ruta_db)
+
+    with open(ruta_sql, "r", encoding="utf-8") as archivo:
+        script_sql = archivo.read()
+
+    conexion.executescript(script_sql)
+    conexion.commit()
+    conexion.close()
+
+    print("Base de datos creada correctamente.")

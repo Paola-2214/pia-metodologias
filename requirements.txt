@@ -1,0 +1,32 @@
+# Veterinaria Patitas — Mejoras de validación
+
+## Ejecución (Windows / PowerShell)
+
+1. **Haz copia de seguridad** de `database/patitas.db` antes de abrir la nueva versión. El programa añade tablas, columnas e índices; no reinicia la base.
+2. Sitúate en la carpeta `VeterinariaPatitas`, donde está `app.py`.
+3. Ejecuta `python -m pip install -r requirements.txt`.
+4. Ejecuta `python app.py` y visita `http://127.0.0.1:5000/`.
+5. Para restablecer una contraseña localmente, usa `python recuperar_cuenta.py` (ver `RECUPERACION_LOCAL.md`).
+
+## Funciones nuevas
+
+- Registro sin duplicación por correo, incluso con solicitudes simultáneas, y mascotas no repetidas por cliente/nombre/especie/raza.
+- Cambio de contraseña desde `/cambiar-contrasena` y solicitud de recuperación `/recuperar` (requiere configurar un servidor SMTP; el sistema no envía correos hasta entonces).
+- Citas futuras de una hora de duración, lunes a sábado 09:00–20:00; respetan sucursal, doctor, mascota, servicio, ausencias y conflictos de horario. Se pueden cancelar hasta 4 horas antes.
+- Estados: `Programada`/`Confirmada` → `En proceso` al llegar la hora → `Pendiente revisión` después de una hora. **No se marca automáticamente Completada**: eso requiere confirmación de un administrador en el panel de citas, porque que termine el horario no significa que se haya realizado la consulta.
+- Inventario: compra atómica; entradas y salidas manuales con movimientos auditables en `/admin/inventario/movimiento`.
+- Productos y servicios se desactivan en vez de borrarse; los reportes conservan su historial.
+- Servicios ofrecidos por sucursal en `/admin/servicios/sucursales`; ausencias de doctores en `/admin/doctores/ausencias`.
+- Reporte Excel mensual de ventas, compras, citas, movimientos e inventario en `/admin/reportes`.
+- Protección CSRF para los formularios POST; protección de cookies y versiones de contraseña.
+
+## Decisiones / límites importantes
+
+- El horario de ambas sucursales se interpreta como lunes a sábado 09:00 a 20:00 (según los datos de la base). Está fijado en `HORARIOS` dentro de `mejoras.py`, y la duración de citas es 60 minutos. Ajusta estas reglas si la veterinaria tiene otros horarios.
+- Las citas pasadas se actualizan al visitar la pantalla de citas o el panel de citas. **No hay un servicio permanente en segundo plano**; cuando no hay visitantes, no se ejecuta la actualización.
+- El reporte mensual usa datos de transacciones del mes. El inventario es el **actual**, no una reconstrucción del cierre mensual. El esquema original de ventas no guarda la sucursal para ventas anteriores.
+- El ZIP conserva los usuarios y la base de datos originales, incluidos sus hashes. Si ya utilizaste la contraseña predeterminada del administrador, **cámbiala inmediatamente** con `recuperar_cuenta.py`.
+- Si no existe administrador y quieres crear uno al iniciar, define `PATITAS_ADMIN_PASSWORD` en el entorno antes de `python app.py`. No hay contraseña de administrador automática por defecto.
+- Los índices únicos fallarán de forma visible si tu base ya contiene duplicados históricos; en ese caso hay que revisar los registros antes de continuar. No se borran filas automáticamente.
+- El panel de administración original tiene pantallas que usan tablas antiguas. Conviene probar con una **copia** de tus datos antes de trabajar en producción.
+- Para publicar en internet todavía se necesita HTTPS, servidor de producción, copias automáticas de seguridad, controles de acceso robustos y limitación de intentos de inicio de sesión y recuperación. Este proyecto está preparado para pruebas y desarrollo local, no para alojarlo públicamente sin endurecimiento adicional.

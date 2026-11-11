@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Mis Citas - Veterinaria Patitas</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/estilos.css') }}">
+</head>
+
+<body>
+
+<!-- ==============================
+     MENÚ
+============================== -->
+
+<header>
+
+    <nav class="navbar">
+
+        <div class="logo">
+            🐾 Patitas
+        </div>
+
+        <div class="botones-menu">
+
+            <a href="{{ url_for('inicio') }}"
+               class="btn-login">
+                Inicio
+            </a>
+
+            <a href="{{ url_for('mascotas') }}"
+               class="btn-login">
+                Mis Mascotas
+            </a>
+
+            <a href="/notificaciones"
+                class="btn-login">
+
+                🔔 Notificaciones
+
+            </a>
+            
+            <a href="{{ url_for('productos') }}"
+               class="btn-login">
+                Productos
+            </a>
+
+            <a href="{{ url_for('logout') }}"
+               class="btn-cita">
+                Cerrar sesión
+            </a>
+
+        </div>
+
+    </nav>
+
+</header>
+
+
+<!-- ==============================
+     ENCABEZADO
+============================== -->
+
+<section class="pagina-titulo">
+
+    <p>
+        CLÍNICA VETERINARIA PATITAS
+    </p>
+
+    <h1>
+        📅 Mis Citas
+    </h1>
+
+    <span>
+        Agenda y consulta las citas de tus mascotas
+    </span>
+
+</section>
+
+
+<!-- ==============================
+     CONTENIDO
+============================== -->
+
+<section class="seccion">
+
+    <div class="contenedor-citas">
+
+
+        <!-- FORMULARIO -->
+
+        <div class="formulario">
+
+            <h2>
+                Nueva cita
+            </h2>
+
+
+            {% if error %}
+
+                <div class="mensaje-error">
+                    {{ error }}
+                </div>
+
+            {% endif %}
+
+
+            {% if exito %}
+
+                <div class="mensaje-exito">
+                    Cita registrada correctamente.
+                </div>
+
+            {% endif %}
+
+
+            {% if mascotas %}
+
+            <form method="POST">
+<input type="hidden" name="_csrf" value="{{ csrf_token() }}">
+
+
+                <!-- MASCOTA -->
+
+                <label>
+                    Mascota
+                </label>
+
+                <select name="mascota" required>
+
+                    <option value="">
+                        Selecciona tu mascota
+                    </option>
+
+                    {% for mascota in mascotas %}
+
+                        <option value="{{ mascota['id_mascota'] }}">
+                            {{ mascota["nombre"] }}
+                        </option>
+
+                    {% endfor %}
+
+                </select>
+
+
+                <!-- SERVICIO -->
+
+                <label>
+                    Servicio
+                </label>
+
+                <select name="servicio" required>
+
+                    <option value="">
+                        Selecciona un servicio
+                    </option>
+
+                    {% for servicio in servicios %}
+
+                        <option value="{{ servicio['id_servicio'] }}">
+
+                            {{ servicio["nombre"] }}
+                            - ${{ servicio["precio"] }}
+
+                        </option>
+
+                    {% endfor %}
+
+                </select>
+
+
+                <!-- SUCURSAL -->
+
+                <label>
+                    Sucursal
+                </label>
+
+                <select name="sucursal" required>
+
+                    <option value="">
+                        Selecciona una sucursal
+                    </option>
+
+                    {% for sucursal in sucursales %}
+
+                        <option value="{{ sucursal['id_sucursal'] }}">
+                            {{ sucursal["nombre"] }}
+                        </option>
+
+                    {% endfor %}
+
+                </select>
+
+
+                <!-- DOCTOR -->
+
+                <label>
+                    Doctor
+                </label>
+
+                <select name="doctor" required>
+
+                    <option value="">
+                        Selecciona un doctor
+                    </option>
+
+                    {% for doctor in doctores %}
+
+                        <option value="{{ doctor['id_doctor'] }}">
+
+                            {{ doctor["nombre"] }}
+                            - {{ doctor["sucursal"] }}
+
+                        </option>
+
+                    {% endfor %}
+
+                </select>
+
+
+                <!-- FECHA -->
+
+                <label>
+                    Fecha
+                </label>
+
+                <input
+                    type="date"
+                    name="fecha"
+                    required
+                >
+
+
+                <!-- HORA -->
+
+                <label>
+                    Hora
+                </label>
+
+                <input
+                    type="time"
+                    name="hora"
+                    required
+                >
+
+
+                <button
+                    type="submit"
+                    class="boton-formulario">
+
+                    Agendar cita
+
+                </button>
+
+            </form>
+
+
+            {% else %}
+
+                <div class="mensaje-error">
+
+                    Primero necesitas registrar una mascota.
+
+                </div>
+
+                <a href="{{ url_for('mascotas') }}"
+                   class="boton-ir">
+
+                    Registrar mascota
+
+                </a>
+
+            {% endif %}
+
+        </div>
+
+
+        <!-- CITAS REGISTRADAS -->
+
+        <div class="lista-citas">
+
+            <h2>
+                Citas programadas
+            </h2>
+
+
+            {% if citas %}
+
+
+                {% for cita in citas %}
+
+                    <div class="tarjeta-cita">
+
+                        <div class="cita-fecha">
+                            📅
+                        </div>
+
+                        <div>
+
+                            <h3>
+                                {{ cita["mascota"] }}
+                            </h3>
+
+                            <p>
+                                <strong>Servicio:</strong>
+                                {{ cita["servicio"] }}
+                            </p>
+
+                            <p>
+                                <strong>Doctor:</strong>
+                                {{ cita["doctor"] }}
+                            </p>
+
+                            <p>
+                                <strong>Sucursal:</strong>
+                                {{ cita["sucursal"] }}
+                            </p>
+
+                            <p>
+                                <strong>Fecha:</strong>
+                                {{ cita["fecha"] }}
+                            </p>
+
+                            <p>
+                                <strong>Hora:</strong>
+                                {{ cita["hora"] }}
+                            </p>
+
+                            <p>
+
+                                <strong>Estado:</strong>
+
+                                <span class="estado-cita">
+                                    {{ cita["estado"] }}
+                                </span>
+
+                            </p>
+
+                        </div>
+                        {% if cita['estado'] in ('Programada','Confirmada') %}
+                        <form method="post" onsubmit="return confirm('¿Cancelar cita? Solo se permite con mínimo 4 horas de anticipación.')">
+                            <input type="hidden" name="_csrf" value="{{ csrf_token() }}">
+                            <input type="hidden" name="accion" value="cancelar">
+                            <input type="hidden" name="id_cita" value="{{ cita['id_cita'] }}">
+                            <button type="submit">Cancelar cita</button>
+                        </form>
+                        {% endif %}
+                    </div>
+
+                {% endfor %}
+
+
+            {% else %}
+
+                <div class="sin-mascotas">
+
+                    <div>
+                        📅
+                    </div>
+
+                    <h3>
+                        No tienes citas programadas
+                    </h3>
+
+                    <p>
+                        Agenda tu primera cita utilizando
+                        el formulario.
+                    </p>
+
+                </div>
+
+            {% endif %}
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<footer>
+
+    <div>
+
+        <h3>
+            🐾 Clínica Veterinaria Patitas
+        </h3>
+
+        <p>
+            Cuidamos a quienes forman parte de tu familia.
+        </p>
+
+    </div>
+
+    <div>
+
+        <h4>
+            Sucursales
+        </h4>
+
+        <p>Patitas Centro</p>
+        <p>Patitas Valle</p>
+
+    </div>
+
+    <div>
+
+        <h4>
+            Contacto
+        </h4>
+
+        <p>Tel: 81 1234 5678</p>
+        <p>contacto@patitas.com</p>
+
+    </div>
+
+</footer>
+
+
+<div class="copyright">
+    © 2026 Clínica Veterinaria Patitas
+</div>
+
+</body>
+
+</html>

@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Panel Administrativo - Patitas</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/estilos.css') }}">
+</head>
+
+<body>
+
+
+<!-- ==========================================
+     MENÚ
+========================================== -->
+
+<header>
+
+    <nav class="navbar">
+
+        <div class="logo">
+            🐾 Patitas Admin
+        </div>
+
+        <div class="botones-menu">
+
+            <a href="/"
+               class="btn-login">
+                Ver página
+            </a>
+
+            <a href="/logout"
+               class="btn-cita">
+                Cerrar sesión
+            </a>
+
+        </div>
+
+</nav>
+
+</header>
+
+
+<!-- ==========================================
+     ENCABEZADO
+========================================== -->
+
+<section class="pagina-titulo">
+
+    <p>
+        CLÍNICA VETERINARIA PATITAS
+    </p>
+
+    <h1>
+        ⚙️ Panel Administrativo
+    </h1>
+
+    <span>
+        Bienvenido, {{ session["nombre"] }}
+    </span>
+
+</section>
+
+
+<!-- ==========================================
+     OPCIONES DEL ADMIN
+========================================== -->
+
+<section class="seccion">
+
+    <div class="titulo-seccion">
+
+        <p>
+            ADMINISTRACIÓN
+        </p>
+
+        <h2>
+            Gestionar información
+        </h2>
+
+    </div>
+
+
+    <div class="panel-acciones">
+
+
+        <!-- PRODUCTOS -->
+
+        <a href="/admin/productos"
+           class="accion-admin">
+
+            <div>
+                🛍️
+            </div>
+
+            <h3>
+                Productos
+            </h3>
+
+            <p>
+                Agregar productos y modificar
+                existencias del inventario.
+            </p>
+
+        </a>
+
+
+
+
+
+        <a href="{{ url_for('admin_servicios') }}" class="accion-admin"><div>🩺</div><h3>Servicios</h3><p>Agregar y administrar servicios veterinarios.</p></a>
+
+                <!-- DOCTORES -->
+
+        <a href="{{ url_for('admin_doctores') }}"
+   class="accion-admin">
+
+    <div>
+        👨‍⚕️
+    </div>
+
+    <h3>
+        Doctores
+    </h3>
+
+    <p>
+        Agregar, editar y administrar
+        la información de los doctores.
+    </p>
+
+</a>
+
+
+        <a href="{{ url_for('movimiento_inventario') }}" class="accion-admin"><div>📦</div><h3>Entradas y salidas</h3><p>Reabastecer, retirar y consultar movimientos de mercancía.</p></a>
+        <a href="{{ url_for('reportes') }}" class="accion-admin"><div>📊</div><h3>Reportes mensuales</h3><p>Consultar ventas, citas y descargar un Excel.</p></a>
+        <a href="{{ url_for('ausencias') }}" class="accion-admin"><div>📅</div><h3>Ausencias</h3><p>Registrar períodos en que los doctores no están disponibles.</p></a>
+        <a href="{{ url_for('servicios_sucursales') }}" class="accion-admin"><div>🏥</div><h3>Servicios por sucursal</h3><p>Elegir los servicios ofrecidos en cada ubicación.</p></a>
+    </div>
+
+</section>
+
+
+<!-- ==========================================
+     RESUMEN GENERAL
+========================================== -->
+
+<section class="seccion fondo">
+
+    <div class="titulo-seccion">
+
+        <p>
+            RESUMEN GENERAL
+        </p>
+
+        <h2>
+            Información de la clínica
+        </h2>
+
+    </div>
+
+
+    <div class="panel-resumen">
+
+
+        <a href="{{ url_for('admin_resumen', seccion='clientes') }}" class="tarjeta-admin" style="text-decoration:none;color:inherit;display:block" title="Ver clientes">
+
+            <div>
+                👤
+            </div>
+
+            <h3>
+                Clientes
+            </h3>
+
+            <span>
+                {{ total_clientes }}
+            </span>
+
+        </a>
+
+
+        <a href="{{ url_for('admin_resumen', seccion='mascotas') }}" class="tarjeta-admin" style="text-decoration:none;color:inherit;display:block" title="Ver mascotas">
+
+            <div>
+                🐾
+            </div>
+
+            <h3>
+                Mascotas
+            </h3>
+
+            <span>
+                {{ total_mascotas }}
+            </span>
+
+        </a>
+
+
+        <a href="{{ url_for('admin_resumen', seccion='citas') }}" class="tarjeta-admin" style="text-decoration:none;color:inherit;display:block" title="Ver citas">
+
+            <div>
+                📅
+            </div>
+
+            <h3>
+                Citas
+            </h3>
+
+            <span>
+                {{ total_citas }}
+            </span>
+
+        </a>
+
+
+        <a href="{{ url_for('admin_resumen', seccion='productos') }}" class="tarjeta-admin" style="text-decoration:none;color:inherit;display:block" title="Ver productos">
+
+            <div>
+                🛍️
+            </div>
+
+            <h3>
+                Productos
+            </h3>
+
+            <span>
+                {{ total_productos }}
+            </span>
+
+        </a>
+
+
+        <a href="{{ url_for('admin_resumen', seccion='ventas') }}" class="tarjeta-admin" style="text-decoration:none;color:inherit;display:block" title="Ver ventas">
+
+            <div>
+                💰
+            </div>
+
+            <h3>
+                Ventas
+            </h3>
+
+            <span>
+                ${{ total_ventas }}
+            </span>
+
+        </a>
+
+
+    </div>
+
+</section>
+
+
+<!-- ==========================================
+     CITAS REGISTRADAS
+========================================== -->
+
+<section class="seccion">
+
+    <div class="titulo-seccion">
+
+        <p>
+            CONTROL DE CITAS
+        </p>
+
+        <h2>
+            Citas registradas
+        </h2>
+
+    </div>
+
+
+    <div class="tabla-contenedor">
+
+        <table class="tabla-admin">
+
+            <thead>
+
+                <tr>
+                    <th>Cliente</th>
+                    <th>Mascota</th>
+                    <th>Servicio</th>
+                    <th>Doctor</th>
+                    <th>Sucursal</th>
+                    <th>Fecha</th>
+                    <th>Hora</th>
+                    <th>Estado</th>
+                </tr>
+
+            </thead>
+
+
+            <tbody>
+
+                {% if citas %}
+
+                    {% for cita in citas %}
+
+                        <tr>
+
+                            <td>
+                                {{ cita["cliente"] }}
+                            </td>
+
+                            <td>
+                                {{ cita["mascota"] }}
+                            </td>
+
+                            <td>
+                                {{ cita["servicio"] }}
+                            </td>
+
+                            <td>
+                                {{ cita["doctor"] }}
+                            </td>
+
+                            <td>
+                                {{ cita["sucursal"] }}
+                            </td>
+
+                            <td>
+                                {{ cita["fecha"] }}
+                            </td>
+
+                            <td>
+                                {{ cita["hora"] }}
+                            </td>
+
+                            <td>
+
+                                <span class="estado-cita">
+                                    {{ cita["estado"] }}
+                                </span>
+
+                            </td>
+
+                        </tr>
+
+                    {% endfor %}
+
+                {% else %}
+
+                    <tr>
+
+                        <td colspan="8"
+                            style="text-align: center;">
+
+                            No hay citas registradas.
+
+                        </td>
+
+                    </tr>
+
+                {% endif %}
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</section>
+
+
+<!-- ==========================================
+     INVENTARIO
+========================================== -->
+
+<section class="seccion fondo">
+
+    <div class="titulo-seccion">
+
+        <p>
+            INVENTARIO
+        </p>
+
+        <h2>
+            Existencias de productos
+        </h2>
+
+    </div>
+
+
+    <div class="tabla-contenedor">
+
+        <table class="tabla-admin">
+
+            <thead>
+
+                <tr>
+                    <th>Producto</th>
+                    <th>Precio</th>
+                    <th>Sucursal</th>
+                    <th>Existencias</th>
+                </tr>
+
+            </thead>
+
+
+            <tbody>
+
+                {% if inventario %}
+
+                    {% for item in inventario %}
+
+                        <tr>
+
+                            <td>
+                                {{ item["producto"] }}
+                            </td>
+
+                            <td>
+                                ${{ item["precio"] }}
+                            </td>
+
+                            <td>
+                                {{ item["sucursal"] }}
+                            </td>
+
+                            <td>
+
+                                {% if item["existencias"] <= 3 %}
+
+                                    <strong style="color: red;">
+                                        {{ item["existencias"] }}
+                                    </strong>
+
+                                {% else %}
+
+                                    {{ item["existencias"] }}
+
+                                {% endif %}
+
+                            </td>
+
+                        </tr>
+
+                    {% endfor %}
+
+                {% else %}
+
+                    <tr>
+
+                        <td colspan="4"
+                            style="text-align: center;">
+
+                            No hay productos en inventario.
+
+                        </td>
+
+                    </tr>
+
+                {% endif %}
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+
+    <div style="
+        text-align: center;
+        margin-top: 30px;
+    ">
+
+        <a href="/admin/productos"
+           class="boton-principal">
+
+            Modificar inventario
+
+        </a>
+
+    </div>
+
+</section>
+
+
+<!-- ==========================================
+     CLIENTES
+========================================== -->
+
+<section class="seccion">
+
+    <div class="titulo-seccion">
+
+        <p>
+            CLIENTES
+        </p>
+
+        <h2>
+            Clientes registrados
+        </h2>
+
+    </div>
+
+
+    <div class="tabla-contenedor">
+
+        <table class="tabla-admin">
+
+            <thead>
+
+                <tr>
+                    <th>Nombre</th>
+                    <th>Teléfono</th>
+                    <th>Correo</th>
+                </tr>
+
+            </thead>
+
+
+            <tbody>
+
+                {% if clientes %}
+
+                    {% for cliente in clientes %}
+
+                        <tr>
+
+                            <td>
+                                {{ cliente["nombre"] }}
+                            </td>
+
+                            <td>
+
+                                {% if cliente["telefono"] %}
+
+                                    {{ cliente["telefono"] }}
+
+                                {% else %}
+
+                                    No registrado
+
+                                {% endif %}
+
+                            </td>
+
+                            <td>
+                                {{ cliente["correo"] }}
+                            </td>
+
+                        </tr>
+
+                    {% endfor %}
+
+                {% else %}
+
+                    <tr>
+
+                        <td colspan="3"
+                            style="text-align: center;">
+
+                            No hay clientes registrados.
+
+                        </td>
+
+                    </tr>
+
+                {% endif %}
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</section>
+
+
+<!-- ==========================================
+     FOOTER
+========================================== -->
+
+<footer>
+
+    <div>
+
+        <h3>
+            🐾 Clínica Veterinaria Patitas
+        </h3>
+
+        <p>
+            Sistema administrativo de la clínica.
+        </p>
+
+    </div>
+
+
+    <div>
+
+        <h4>
+            Sucursales
+        </h4>
+
+        <p>
+            Patitas Centro
+        </p>
+
+        <p>
+            Patitas Valle
+        </p>
+
+    </div>
+
+
+    <div>
+
+        <h4>
+            Administración
+        </h4>
+
+        <p>
+            Productos
+        </p>
+
+        <p>
+            Servicios
+        </p>
+
+        <p>
+            Doctores
+        </p>
+
+    </div>
+
+</footer>
+
+
+<div class="copyright">
+
+    © 2026 Clínica Veterinaria Patitas
+
+</div>
+
+
+</body>
+
+</html>

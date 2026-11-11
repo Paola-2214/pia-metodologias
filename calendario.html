@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Notificaciones - Patitas</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/estilos.css') }}">
+</head>
+
+<body>
+
+
+<!-- ==========================================
+     MENÚ
+========================================== -->
+
+<header>
+
+    <nav class="navbar">
+
+        <div class="logo">
+            🐾 Patitas
+        </div>
+
+
+        <div class="botones-menu">
+
+            <a href="/"
+               class="btn-login">
+                Inicio
+            </a>
+
+            <a href="/mascotas"
+               class="btn-login">
+                Mis Mascotas
+            </a>
+
+            <a href="/citas"
+               class="btn-login">
+                Mis Citas
+            </a>
+
+            <a href="/productos"
+               class="btn-login">
+                Productos
+            </a>
+
+            <a href="/logout"
+               class="btn-cita">
+                Cerrar sesión
+            </a>
+
+        </div>
+
+    </nav>
+
+</header>
+
+
+<!-- ==========================================
+     ENCABEZADO
+========================================== -->
+
+<section class="pagina-titulo">
+
+    <p>
+        MI CUENTA
+    </p>
+
+    <h1>
+        🔔 Notificaciones
+    </h1>
+
+    <span>
+        Recordatorios de tus citas veterinarias
+    </span>
+
+</section>
+
+
+<!-- ==========================================
+     LISTA DE NOTIFICACIONES
+========================================== -->
+
+<section class="seccion">
+
+    <div style="
+        max-width: 850px;
+        margin: auto;
+    ">
+
+
+        {% if notificaciones %}
+
+
+            {% for notificacion in notificaciones %}
+
+
+                <div class="tarjeta-cita"
+                     style="margin-bottom: 20px;">
+
+
+                    <!-- ENCABEZADO -->
+
+                    <div style="
+                        display: flex;
+                        justify-content: space-between;
+                        align-items: center;
+                        gap: 15px;
+                        flex-wrap: wrap;
+                    ">
+
+
+                        <h3 style="color: #198754;">
+
+                            🔔 Cita programada
+
+                        </h3>
+
+
+                        {% if notificacion["leida"] == 0 %}
+
+                            <span class="estado-cita">
+                                Nueva
+                            </span>
+
+                        {% endif %}
+
+
+                    </div>
+
+
+                    <!-- MENSAJE -->
+
+                    <p style="margin-top: 15px;">
+
+                        Tienes una cita programada
+                        para tu mascota
+
+                        <strong>
+                            {{ notificacion["mascota"] }}
+                        </strong>.
+
+                    </p>
+
+
+                    <!-- SERVICIO -->
+
+                    <p>
+
+                        <strong>
+                            🩺 Servicio:
+                        </strong>
+
+                        {{ notificacion["servicio"] }}
+
+                    </p>
+
+
+                    <!-- DOCTOR -->
+
+                    <p>
+
+                        <strong>
+                            👨‍⚕️ Doctor:
+                        </strong>
+
+                        {{ notificacion["doctor"] }}
+
+                    </p>
+
+
+                    <!-- SUCURSAL -->
+
+                    <p>
+
+                        <strong>
+                            📍 Sucursal:
+                        </strong>
+
+                        {{ notificacion["sucursal"] }}
+
+                    </p>
+
+
+                    <!-- FECHA -->
+
+                    <p>
+
+                        <strong>
+                            📅 Fecha:
+                        </strong>
+
+                        {{ notificacion["fecha"] }}
+
+                    </p>
+
+
+                    <!-- HORA -->
+
+                    <p>
+
+                        <strong>
+                            🕐 Hora:
+                        </strong>
+
+                        {{ notificacion["hora"] }}
+
+                    </p>
+
+
+                    <!-- ESTADO -->
+
+                    <p>
+
+                        <strong>
+                            Estado:
+                        </strong>
+
+                        {{ notificacion["estado"] }}
+
+                    </p>
+
+
+                    <!-- BOTÓN CALENDARIO -->
+
+                    <div style="margin-top: 20px;">
+
+                        <a href="/calendario?cita={{ notificacion['id_cita'] }}"
+                           class="boton-principal">
+
+                            📅 Ver en calendario
+
+                        </a>
+
+                    </div>
+
+
+                </div>
+
+
+            {% endfor %}
+
+
+        {% else %}
+
+
+            <!-- SIN NOTIFICACIONES -->
+
+            <div class="sin-mascotas">
+
+                <div style="
+                    font-size: 55px;
+                    margin-bottom: 10px;
+                ">
+
+                    🔔
+
+                </div>
+
+
+                <h3>
+                    No tienes notificaciones
+                </h3>
+
+
+                <p>
+                    Cuando agendes una cita,
+                    aparecerá aquí.
+                </p>
+
+
+                <div style="margin-top: 20px;">
+
+                    <a href="/citas"
+                       class="boton-principal">
+
+                        Agendar una cita
+
+                    </a>
+
+                </div>
+
+            </div>
+
+
+        {% endif %}
+
+
+    </div>
+
+</section>
+
+
+<!-- ==========================================
+     VOLVER AL INICIO
+========================================== -->
+
+<section class="cta">
+
+    <h2>
+        Clínica Veterinaria Patitas
+    </h2>
+
+    <p>
+        Consulta tus citas y recordatorios
+        cuando lo necesites.
+    </p>
+
+    <a href="/"
+       class="boton-blanco">
+
+        Volver al inicio
+
+    </a>
+
+</section>
+
+
+<!-- ==========================================
+     FOOTER
+========================================== -->
+
+<footer>
+
+
+    <div>
+
+        <h3>
+            🐾 Clínica Veterinaria Patitas
+        </h3>
+
+        <p>
+            Cuidamos la salud y bienestar
+            de tus mascotas.
+        </p>
+
+    </div>
+
+
+    <div>
+
+        <h4>
+            Mi cuenta
+        </h4>
+
+        <p>
+            Mis Mascotas
+        </p>
+
+        <p>
+            Mis Citas
+        </p>
+
+        <p>
+            Notificaciones
+        </p>
+
+    </div>
+
+
+    <div>
+
+        <h4>
+            Sucursales
+        </h4>
+
+        <p>
+            Patitas Centro
+        </p>
+
+        <p>
+            Patitas Valle
+        </p>
+
+    </div>
+
+
+</footer>
+
+
+<div class="copyright">
+
+    © 2026 Clínica Veterinaria Patitas
+
+</div>
+
+
+</body>
+
+</html>
